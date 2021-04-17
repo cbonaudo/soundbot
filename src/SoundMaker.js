@@ -1,8 +1,7 @@
-const fs = require("fs");
-
 class SoundMaker {
-  constructor({ channelID, soundpath }) {
+  constructor({ channelID, soundnames, soundpath }) {
     this.channelID = channelID;
+    this.soundnames = soundnames;
     this.soundpath = soundpath;
   }
 
@@ -14,23 +13,18 @@ class SoundMaker {
     }, 5000);
   }
 
-  playSound() {
-    if (this.soundpath) {
-      this.playSpecificSound();
-    } else {
-      this.playRandomSound();
-    }
+  getSoundAndPlayIt() {
+    const soundname = this.getRandomSound();
+    this.playSound(soundname);
   }
 
-  playSpecificSound() {
-    this.connection.play(`./sounds/${this.soundpath}.mp3`);
+  getRandomSound() {
+    const rand = Math.floor(Math.random() * this.soundnames.length);
+    return this.soundnames[rand];
   }
 
-  playRandomSound() {
-    fs.readdir("./sounds", (_, files) => {
-      const rand = Math.floor(Math.random() * files.length);
-      this.connection.play("./sounds/" + files[rand]);
-    });
+  playSound(soundname) {
+    this.connection.play(`${this.soundpath}/${soundname}`);
   }
 }
 

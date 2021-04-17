@@ -1,17 +1,26 @@
 const Discord = require("discord.js");
+const fs = require("fs");
+
 const { SoundMaker } = require("./SoundMaker");
 
 class BotHandler {
-  constructor(token, userSounds) {
+  constructor(env) {
     this.client = new Discord.Client();
     this.isSpeaking = false;
-    this.userSounds = userSounds;
+
+    this.getConfigFromEnv(env);
     this.addVoiceStateUpdateEvent();
-    this.login(token);
+    this.login();
   }
 
-  login(token) {
-    this.client.login(token);
+  getConfigFromEnv(env) {
+    this.userSounds = env.userSounds;
+    this.soundpath = env.soundpath;
+    this.token = env.token;
+  }
+
+  login() {
+    this.client.login(this.token);
   }
 
   addVoiceStateUpdateEvent() {
@@ -21,10 +30,11 @@ class BotHandler {
 
       const soundMaker = new SoundMaker({
         channelID: newState.channelID,
-        soundpath: this.getSoundpath(newState.member.user.username),
+        soundnames: this.getSoundnames(newState.member.user.username),
+        soundpath: this.soundpath,
       });
       await soundMaker.connect(this.client.channels);
-      soundMaker.playSound();
+      soundMaker.getSoundAndPlayIt();
 
       setTimeout(() => {
         this.isSpeaking = false;
@@ -32,9 +42,14 @@ class BotHandler {
     });
   }
 
-  getSoundpath(username) {
-    return this.userSounds.find((userSound) => userSound.username === username)
-      .soundpath;
+  getSoundnames(username) {
+    if (this.userSounds.find((userSound) => userSound.username === username)) {
+      return this.userSounds.find(
+        (userSound) => userSound.username === username
+      ).soundnames;
+    } else {
+      return fs.readdirSync(this.soundpath);
+    }
   }
 
   cannotEmit(oldState, newState) {
