@@ -1,4 +1,4 @@
-const { BotHandler } = require('./BotHandler');
-const env = require('./env.json')
+const { BotHandler } = require("./src/BotHandler");
+const env = require("./env.json");
 
-new BotHandler(env.token);
+new BotHandler(env.token, env.userSounds);
