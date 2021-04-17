@@ -6,11 +6,15 @@ class SoundMaker {
   }
 
   async connect(clientChannels) {
-    const voiceChannel = await clientChannels.fetch(this.channelID);
-    this.connection = await voiceChannel.join();
-    setTimeout(() => {
-      voiceChannel.leave();
-    }, 5000);
+    try {
+      const voiceChannel = await clientChannels.fetch(this.channelID);
+      this.connection = await voiceChannel.join();
+      setTimeout(() => {
+        voiceChannel.leave();
+      }, 5000);
+    } catch (e) {
+      console.log("failed to connect to channel : " + e);
+    }
   }
 
   getSoundAndPlayIt() {
@@ -24,7 +28,11 @@ class SoundMaker {
   }
 
   playSound(soundname) {
-    this.connection.play(`${this.soundpath}/${soundname}`);
+    try {
+      this.connection.play(`${this.soundpath}/${soundname}`);
+    } catch (e) {
+      console.log("failed to play sound : " + e);
+    }
   }
 }
 

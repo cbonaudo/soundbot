@@ -2,7 +2,8 @@
   "name": "sound-bot",
   "version": "1.0.0",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "test": "node ./tests/runTests.js"
   },
   "dependencies": {
     "@discordjs/opus": "^0.5.0",
